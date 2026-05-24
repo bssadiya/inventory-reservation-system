@@ -1,5 +1,7 @@
 # AuraMed Hub: Transaction-Safe Inventory Reservation Platform
-
+Live Demo
+[
+🌐 AuraMed Hub Live Application](https://allo-inventory-reservation-system-bu2m.onrender.com/?utm_source=chatgpt.com)
 A production-ready full-stack warehouse inventory reservation system built with **Prisma ORM**, **PostgreSQL**, and **React 19**. This repository implements optimistic and pessimistic row-level transaction safety designed to eliminate stock race conditions (double allocation/overselling) under high-concurrency checkout volumes.
 
 ---
