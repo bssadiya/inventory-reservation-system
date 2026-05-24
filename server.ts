@@ -800,6 +800,7 @@ async function release(reservationId: string): Promise<{ status: number; body: a
 
 async function startServer() {
   const app = express();
+  app.use(express.static(path.join(process.cwd(), "dist")));
   const PORT = 3000;
 
   app.use(express.json());
@@ -1004,23 +1005,17 @@ setInterval(async () => {
   });
 
   // Serve static UI assets
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
+ if (process.env.NODE_ENV !== "production") {
+  const vite = await createViteServer({
+    server: { middlewareMode: true },
+    appType: "spa",
+  });
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on port ${PORT} with active transactional database capability.`);
+  app.use(vite.middlewares);
+} else {
+  app.use(express.static(path.join(process.cwd(), "dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(process.cwd(), "dist", "index.html"));
   });
 }
-
-startServer();
