@@ -801,7 +801,7 @@ async function release(reservationId: string): Promise<{ status: number; body: a
 async function startServer() {
   const app = express();
   app.use(express.static(path.join(process.cwd(), "dist")));
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
 
   app.use(express.json());
 
@@ -840,7 +840,7 @@ setInterval(async () => {
   // GET /api/products: List real products merged with their live stocks
   app.get("/api/products", async (req, res) => {
     try {
-      await cleanupExpiredReservations();
+      
       const products = await getProducts();
 
       const formatted = products.map((p: any) => ({
@@ -879,7 +879,7 @@ setInterval(async () => {
   // GET /api/reservations: List all active & historic reservation records
   app.get("/api/reservations", async (req, res) => {
     try {
-      await cleanupExpiredReservations();
+     
       const reservations = await getReservations();
 
       const formatted = reservations.map((r: any) => ({
@@ -902,7 +902,7 @@ setInterval(async () => {
 
   app.get("/api/reservations/:id", async (req, res) => {
     try {
-      await cleanupExpiredReservations();
+      
       const resv = await getReservationById(req.params.id);
 
       if (!resv) {
@@ -1019,6 +1019,9 @@ setInterval(async () => {
       res.sendFile(path.join(process.cwd(), "dist", "index.html"));
     });
   }
+  app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
+});
 }
 
 startServer();
