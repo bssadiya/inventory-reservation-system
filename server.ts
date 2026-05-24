@@ -1004,19 +1004,21 @@ setInterval(async () => {
     });
   });
 
-  // Serve static UI assets
- if (process.env.NODE_ENV !== "production") {
-  const vite = await createViteServer({
-    server: { middlewareMode: true },
-    appType: "spa",
-  });
+   // Serve static UI assets
+  if (process.env.NODE_ENV !== "production") {
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: "spa",
+    });
 
-  app.use(vite.middlewares);
-} else {
-  app.use(express.static(path.join(process.cwd(), "dist")));
+    app.use(vite.middlewares);
+  } else {
+    app.use(express.static(path.join(process.cwd(), "dist")));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(process.cwd(), "dist", "index.html"));
-  });
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(process.cwd(), "dist", "index.html"));
+    });
+  }
 }
+
 startServer();
