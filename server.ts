@@ -808,12 +808,27 @@ async function startServer() {
   await checkDatabaseConnection();
 
   // Background Sweeper Daemon: Check and restore expired pending holds every 1s
-  setInterval(async () => {
+  let cleanupRunning = false;
+
+setInterval(async () => {
+  if (cleanupRunning) return;
+
+  cleanupRunning = true;
+
+  try {
     const expiredCount = await cleanupExpiredReservations();
+
     if (expiredCount > 0) {
-      console.log(`[Cleaner Sweep Worker] Restored ${expiredCount} expired reservations back to standard reservable stock.`);
+      console.log(
+        `[Cleaner Sweep Worker] Restored ${expiredCount} expired reservations back to standard reservable stock.`
+      );
     }
-  }, 1000);
+  } catch (err) {
+    console.error("[Cleanup Worker Error]:", err);
+  } finally {
+    cleanupRunning = false;
+  }
+}, 60000);
 
   // --- API Endpoints ---
 
