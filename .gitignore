@@ -1,0 +1,12 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+*.db
+*.sqlite
+dev.db
+prisma/*.db
+.env*
+!.env.example

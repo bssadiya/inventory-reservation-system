@@ -1,0 +1,72 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  RELEASED
+  EXPIRED
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  imageUrl    String
+  category    String
+  inventories Inventory[]
+  reservations Reservation[]
+}
+
+model Warehouse {
+  id          String   @id @default(uuid())
+  name        String
+  location    String
+  inventories Inventory[]
+  reservations Reservation[]
+}
+
+model Inventory {
+  productId   String
+  warehouseId String
+  totalQuantity    Int      @default(0)
+  reservedQuantity Int      @default(0)
+
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@id([productId, warehouseId])
+  @@index([productId])
+  @@index([warehouseId])
+}
+
+model Reservation {
+  id          String   @id @default(uuid())
+  productId   String
+  warehouseId String
+  quantity    Int
+  status      ReservationStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([warehouseId])
+  @@index([status])
+}
+
+model IdempotencyRecord {
+  key       String   @id
+  status    Int
+  body      String   // JSON stringified payload
+  createdAt DateTime @default(now())
+}
