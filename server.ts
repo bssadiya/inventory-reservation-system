@@ -1019,3 +1019,4 @@ setInterval(async () => {
     res.sendFile(path.join(process.cwd(), "dist", "index.html"));
   });
 }
+startServer();
